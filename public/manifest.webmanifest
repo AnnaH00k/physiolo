@@ -1,0 +1,33 @@
+{
+  "name": "Physiolo",
+  "short_name": "Physiolo",
+  "description": "Minimal movement reminder widget with 30-minute intervals.",
+  "start_url": "/widget",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#efe3c2",
+  "theme_color": "#efe3c2",
+  "orientation": "portrait",
+  "icons": [
+  {
+    "src": "/icon.svg",
+    "sizes": "any",
+    "type": "image/svg+xml",
+    "purpose": "any"
+  }
+],
+  "shortcuts": [
+    {
+      "name": "Widget öffnen",
+      "short_name": "Widget",
+      "description": "Öffnet die kompakte Widget-Ansicht",
+      "url": "/widget"
+    },
+    {
+      "name": "Hauptansicht öffnen",
+      "short_name": "App",
+      "description": "Öffnet die vollständige Physiolo-Ansicht",
+      "url": "/"
+    }
+  ]
+}
