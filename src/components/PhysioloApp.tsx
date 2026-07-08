@@ -103,11 +103,13 @@ export function PhysioloApp({ mode = "full", nowIso }: PhysioloAppProps) {
     refreshStats();
   }, [refreshStats]);
 
-  const launchWidget = useCallback(() => {
-    const features =
-      "width=300,height=240,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no";
-    window.open("/widget", "physiolo-widget", features);
-  }, []);
+const launchWidget = useCallback(() => {
+  const features =
+    "width=300,height=240,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no";
+
+  const basePath = process.env.NODE_ENV === "production" ? "/physiolo" : "";
+  window.open(`${basePath}/widget/`, "physiolo-widget", features);
+}, []);
 
   const currentDeskActive = activeDeskSession || timerDeskActive;
 
