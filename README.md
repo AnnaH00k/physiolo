@@ -101,7 +101,6 @@ The widget is intended to mirror the app state instead of acting like a separate
 
 - This project is intended for static hosting rather than a traditional Node server deployment.
 - If deploying to a different repository or custom domain, update the `basePath` and `assetPrefix` values accordingly.
-
-## License
-
-Add your preferred license here, for example MIT.
+.
+.
+.
