@@ -104,3 +104,4 @@ The widget is intended to mirror the app state instead of acting like a separate
 .
 .
 .
+.
