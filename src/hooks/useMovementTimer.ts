@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   getTimerDueAtIso,
   getTimerSecondsLeft,
@@ -19,6 +19,7 @@ export function useMovementTimer({ onReminder }: UseMovementTimerArgs = {}) {
   const [activeDeskSession, setActiveDeskSession] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState<NotificationStatus>("default");
   const [showAlert, setShowAlert] = useState(false);
+  const notificationShownRef = useRef(false);
 
   const syncFromStorage = useCallback(() => {
     const active = isDeskSessionActive();
@@ -27,6 +28,46 @@ export function useMovementTimer({ onReminder }: UseMovementTimerArgs = {}) {
     setActiveDeskSession(active);
     setSecondsLeft(nextSeconds);
     setShowAlert(active && nextSeconds <= 0);
+  }, []);
+
+  const showDesktopReminder = useCallback(async () => {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+
+    if (Notification.permission === "granted") {
+      if ("serviceWorker" in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification("Movement due", {
+          body: "Take a quick stretch or walk now.",
+          tag: "physiolo-movement-reminder",
+        });
+      } else {
+        new Notification("Movement due", {
+          body: "Take a quick stretch or walk now.",
+          tag: "physiolo-movement-reminder",
+        });
+      }
+      return;
+    }
+
+    if (Notification.permission === "default") {
+      const permission = await Notification.requestPermission();
+      setNotificationStatus(permission as NotificationStatus);
+
+      if (permission === "granted") {
+        if ("serviceWorker" in navigator) {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification("Movement due", {
+            body: "Take a quick stretch or walk now.",
+            tag: "physiolo-movement-reminder",
+          });
+        } else {
+          new Notification("Movement due", {
+            body: "Take a quick stretch or walk now.",
+            tag: "physiolo-movement-reminder",
+          });
+        }
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -66,14 +107,19 @@ export function useMovementTimer({ onReminder }: UseMovementTimerArgs = {}) {
 
       if (active && left <= 0) {
         setShowAlert(true);
+        if (!notificationShownRef.current) {
+          notificationShownRef.current = true;
+          void showDesktopReminder();
+        }
         onReminder?.();
       } else {
         setShowAlert(false);
+        notificationShownRef.current = false;
       }
     }, 1000);
 
     return () => clearInterval(tick);
-  }, [onReminder]);
+  }, [onReminder, showDesktopReminder]);
 
   const startTimer = useCallback(() => {
     syncFromStorage();
